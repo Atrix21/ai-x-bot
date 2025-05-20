@@ -2,10 +2,12 @@ name: Twitter Bot
 
 on:
   schedule:
-    # Run at random times throughout the day
-    - cron: '0 8-23/4 * * *'  # Every 4 hours between 8 AM and 11 PM
-    - cron: '30 9-22/3 * * *'  # Every 3 hours between 9:30 AM and 10:30 PM
-    - cron: '15 10-21/2 * * *'  # Every 2 hours between 10:15 AM and 9:15 PM
+    # Run at optimal times in IST (UTC+5:30)
+    - cron: '0 10 * * *'  # 10:00 AM IST
+    - cron: '0 13 * * *'  # 1:00 PM IST
+    - cron: '0 16 * * *'  # 4:00 PM IST
+    - cron: '0 19 * * *'  # 7:00 PM IST
+    - cron: '0 22 * * *'  # 10:00 PM IST
   # Allows manual triggering from GitHub Actions tab
   workflow_dispatch:
 
