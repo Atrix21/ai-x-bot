@@ -11,6 +11,18 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+def clean_tweet_text(text):
+    """Clean and format tweet text to ensure proper formatting"""
+    # Remove any partial hashtags at the end
+    if text.endswith('...'):
+        text = text[:-3]
+    if '#' in text:
+        # Find the last complete word
+        last_space = text.rfind(' ')
+        if last_space > 0:
+            text = text[:last_space]
+    return text.strip()
+
 def generate_tweet(topic, personality="funny, insightful, with a hint of dark humor"):
     prompt = (
         f"Write a short, engaging tweet about {topic} in a {personality} tone.\n"
@@ -35,9 +47,15 @@ def generate_tweet(topic, personality="funny, insightful, with a hint of dark hu
         )
         tweet = response.choices[0].message.content.strip()
         
+        # Clean and format the tweet
+        tweet = clean_tweet_text(tweet)
+        
         # Ensure the tweet isn't too long
         if len(tweet) > 120:
-            tweet = tweet[:117] + "..."
+            # Find the last complete word
+            last_space = tweet[:120].rfind(' ')
+            if last_space > 0:
+                tweet = tweet[:last_space]
             
         return tweet
     except Exception as e:
@@ -73,9 +91,15 @@ def generate_reply(tweet_text, personality):
         )
         reply = response.choices[0].message.content.strip()
         
+        # Clean and format the reply
+        reply = clean_tweet_text(reply)
+        
         # Ensure the reply isn't too long
         if len(reply) > 120:
-            reply = reply[:117] + "..."
+            # Find the last complete word
+            last_space = reply[:120].rfind(' ')
+            if last_space > 0:
+                reply = reply[:last_space]
             
         return reply
     except Exception as e:

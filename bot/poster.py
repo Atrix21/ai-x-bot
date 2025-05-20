@@ -2,9 +2,9 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-def post_tweet(api, tweet_text):
+def post_tweet(client, tweet_text):
     """
-    Post a tweet using the Twitter API.
+    Post a tweet using the Twitter API v2.
     Returns True if successful, False otherwise.
     """
     if not tweet_text:
@@ -15,11 +15,11 @@ def post_tweet(api, tweet_text):
         # Log the attempt
         logger.info(f"Attempting to post tweet: {tweet_text[:50]}...")
         
-        # Post the tweet
-        response = api.update_status(tweet_text)
+        # Post the tweet using v2 API
+        response = client.create_tweet(text=tweet_text)
         
         # Log success with tweet ID
-        logger.info(f"Successfully posted tweet. Tweet ID: {response.id}")
+        logger.info(f"Successfully posted tweet. Tweet ID: {response.data['id']}")
         return True
         
     except Exception as e:

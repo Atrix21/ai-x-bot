@@ -8,18 +8,18 @@ logger = logging.getLogger(__name__)
 def create_api():
     """Create and verify Twitter API connection"""
     try:
-        auth = tweepy.OAuth1UserHandler(
-            os.getenv("TWITTER_API_KEY"),
-            os.getenv("TWITTER_API_SECRET"),
-            os.getenv("TWITTER_ACCESS_TOKEN"),
-            os.getenv("TWITTER_ACCESS_TOKEN_SECRET")
+        # Create v2 client
+        client = tweepy.Client(
+            consumer_key=os.getenv("TWITTER_API_KEY"),
+            consumer_secret=os.getenv("TWITTER_API_SECRET"),
+            access_token=os.getenv("TWITTER_ACCESS_TOKEN"),
+            access_token_secret=os.getenv("TWITTER_ACCESS_TOKEN_SECRET")
         )
-        api = tweepy.API(auth)
         
         # Verify credentials
-        api.verify_credentials()
-        logger.info("Twitter API authentication successful")
-        return api
+        client.get_me()
+        logger.info("Twitter API v2 authentication successful")
+        return client
         
     except Exception as e:
         logger.error(f"Twitter API authentication failed: {str(e)}")
