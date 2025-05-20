@@ -1,4 +1,5 @@
 requests
 python-dotenv
 schedule
-openai
+openai>=1.0.0
+tweepy

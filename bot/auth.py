@@ -1,21 +1,26 @@
 import os
 from dotenv import load_dotenv
 import tweepy
+import logging
 
-load_dotenv()
+logger = logging.getLogger(__name__)
 
 def create_api():
-    auth = tweepy.OAuth1UserHandler(
-        os.getenv("API_KEY"),
-        os.getenv("API_KEY_SECRET"),
-        os.getenv("ACCESS_TOKEN"),
-        os.getenv("ACCESS_TOKEN_SECRET")
-    )
-    api = tweepy.API(auth)
+    """Create and verify Twitter API connection"""
     try:
+        auth = tweepy.OAuth1UserHandler(
+            os.getenv("TWITTER_API_KEY"),
+            os.getenv("TWITTER_API_SECRET"),
+            os.getenv("TWITTER_ACCESS_TOKEN"),
+            os.getenv("TWITTER_ACCESS_TOKEN_SECRET")
+        )
+        api = tweepy.API(auth)
+        
+        # Verify credentials
         api.verify_credentials()
-        print("Authentication OK")
+        logger.info("Twitter API authentication successful")
+        return api
+        
     except Exception as e:
-        print("Error during authentication:", e)
-        raise e
-    return api
+        logger.error(f"Twitter API authentication failed: {str(e)}")
+        return None

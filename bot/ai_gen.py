@@ -23,15 +23,17 @@ def generate_tweet(topic, personality="funny, insightful, with a hint of dark hu
         f"Tweet:"
     )
     try:
-        response = openai.Completion.create(
-            model="gpt-3.5-turbo-instruct",
-            prompt=prompt,
+        response = openai.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are a witty and engaging Twitter user."},
+                {"role": "user", "content": prompt}
+            ],
             max_tokens=40,
             temperature=0.8,
-            n=1,
-            stop=None
+            n=1
         )
-        tweet = response.choices[0].text.strip()
+        tweet = response.choices[0].message.content.strip()
         
         # Ensure the tweet isn't too long
         if len(tweet) > 120:
@@ -59,15 +61,17 @@ def generate_reply(tweet_text, personality):
     )
     
     try:
-        response = openai.Completion.create(
-            model="gpt-3.5-turbo-instruct",
-            prompt=prompt,
+        response = openai.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": f"You are a {personality} Twitter user."},
+                {"role": "user", "content": prompt}
+            ],
             max_tokens=40,
             temperature=0.7,
-            n=1,
-            stop=None
+            n=1
         )
-        reply = response.choices[0].text.strip()
+        reply = response.choices[0].message.content.strip()
         
         # Ensure the reply isn't too long
         if len(reply) > 120:
