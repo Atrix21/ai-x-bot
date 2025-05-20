@@ -13,6 +13,9 @@ logger = logging.getLogger(__name__)
 
 def clean_tweet_text(text):
     """Clean and format tweet text to ensure proper formatting"""
+    # Remove quotes if present
+    text = text.strip('"\'')
+    
     # Remove any partial hashtags at the end
     if text.endswith('...'):
         text = text[:-3]
@@ -25,23 +28,25 @@ def clean_tweet_text(text):
 
 def generate_tweet(topic, personality="funny, insightful, with a hint of dark humor"):
     prompt = (
-        f"Write a short, engaging tweet about {topic} in a {personality} tone.\n"
+        f"Write a complete, engaging tweet about {topic} in a {personality} tone.\n"
         f"Requirements:\n"
-        f"- Maximum 1-2 lines (around 100-120 characters)\n"
+        f"- Write 1-2 complete sentences\n"
         f"- Make it punchy and memorable\n"
         f"- Include a touch of wit or humor\n"
         f"- No hashtags or mentions\n"
         f"- Be conversational and engaging\n"
+        f"- Ensure each sentence is complete and makes sense\n"
+        f"- Do not use quotes\n"
         f"Tweet:"
     )
     try:
         response = openai.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": "You are a witty and engaging Twitter user."},
+                {"role": "system", "content": "You are a witty and engaging Twitter user. Always write complete thoughts and statements. Never use quotes."},
                 {"role": "user", "content": prompt}
             ],
-            max_tokens=40,
+            max_tokens=100,  # Increased to allow for complete thoughts
             temperature=0.8,
             n=1
         )
@@ -50,12 +55,10 @@ def generate_tweet(topic, personality="funny, insightful, with a hint of dark hu
         # Clean and format the tweet
         tweet = clean_tweet_text(tweet)
         
-        # Ensure the tweet isn't too long
-        if len(tweet) > 120:
-            # Find the last complete word
-            last_space = tweet[:120].rfind(' ')
-            if last_space > 0:
-                tweet = tweet[:last_space]
+        # Ensure we have complete sentences
+        sentences = tweet.split('.')
+        if len(sentences) > 2:  # If more than 2 sentences
+            tweet = '.'.join(sentences[:2]) + '.'  # Keep only first two sentences
             
         return tweet
     except Exception as e:
@@ -68,13 +71,15 @@ def generate_reply(tweet_text, personality):
     Ensures the reply is engaging and concise.
     """
     prompt = (
-        f"Write a short, engaging reply to this tweet: \"{tweet_text}\"\n"
+        f"Write a complete, engaging reply to this tweet: \"{tweet_text}\"\n"
         f"Requirements:\n"
-        f"- Maximum 1-2 lines (around 100-120 characters)\n"
+        f"- Write 1-2 complete sentences\n"
         f"- Make it punchy and memorable\n"
         f"- Include a touch of wit or humor\n"
         f"- No hashtags or mentions\n"
         f"- Be conversational and maintain the {personality} tone\n"
+        f"- Ensure each sentence is complete and makes sense\n"
+        f"- Do not use quotes\n"
         f"Reply:"
     )
     
@@ -82,10 +87,10 @@ def generate_reply(tweet_text, personality):
         response = openai.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": f"You are a {personality} Twitter user."},
+                {"role": "system", "content": f"You are a {personality} Twitter user. Always write complete thoughts and statements. Never use quotes."},
                 {"role": "user", "content": prompt}
             ],
-            max_tokens=40,
+            max_tokens=100,  # Increased to allow for complete thoughts
             temperature=0.7,
             n=1
         )
@@ -94,12 +99,10 @@ def generate_reply(tweet_text, personality):
         # Clean and format the reply
         reply = clean_tweet_text(reply)
         
-        # Ensure the reply isn't too long
-        if len(reply) > 120:
-            # Find the last complete word
-            last_space = reply[:120].rfind(' ')
-            if last_space > 0:
-                reply = reply[:last_space]
+        # Ensure we have complete sentences
+        sentences = reply.split('.')
+        if len(sentences) > 2:  # If more than 2 sentences
+            reply = '.'.join(sentences[:2]) + '.'  # Keep only first two sentences
             
         return reply
     except Exception as e:
